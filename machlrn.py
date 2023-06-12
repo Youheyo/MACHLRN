@@ -15,7 +15,7 @@ def train_test_split(X, y, test_size=0.2):
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 def euclidean_distance(point1, point2):
-	dist = (point1 - point2) **
+	dist = (point1 - point2) ** 2
 	return np.sqrt(dist)
 
 def knn(X_train, y_train, X_Test, k):
