@@ -27,6 +27,9 @@ def knn(X_train, y_train, X_Test, k):
 		predicted_label = max(set(nearest_labels), key=nearest_labels.count)
 		# print(predicted_label)
 		y_pred.append(predicted_label)
+	print(distances)
+	print("Sorted Result")
+	print(nearest_indices)
 	return y_pred
 
 sampleData = [1] * 20
