@@ -8,8 +8,18 @@ data = data.iloc[1:, 3:]
 X = data.iloc[:, :-1]
 y = data.iloc[:, -1]
 
-# print(data)
-# print(y)
+def train_test_split(X, y, test_size=0.2):
+	split_index = int(len(X) * (1 - test_size))
+	X_train, X_test = X[1:split_index], X[split_index:]
+	y_train, y_test = y[1:split_index], y[split_index:]
+	return X_train, X_test, y_train, y_test
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, 0.2)
+
+# print("X Train list", X_train)
+# print("X Test list", X_test)
+# print("Y Train list", y_train)
+# print("Y Test list", y_test)
 
 def euclid_dist(point1, point2):
 	dist = np.sqrt(np.sum((point1 - point2) ** 2))
@@ -25,19 +35,20 @@ def knn(X_train, y_train, X_Test, k):
 		nearest_indices = sorted(range(len(distances)), key=lambda i:distances[i])[:k]
 		nearest_labels = [y_train.iloc[i] for i in nearest_indices]
 		predicted_label = max(set(nearest_labels), key=nearest_labels.count)
-		# print(predicted_label)
 		y_pred.append(predicted_label)
-	print(distances)
-	print("Sorted Result")
-	print(nearest_indices)
+	print("Distances list ", distances)
+	print("Nearest Indices" , nearest_indices)
 	return y_pred
 
-sampleData = [1] * 20
-# print(sampleData)
+y_pred = (knn(X_train, y_train, X_test, 3))
+print(y_pred)
 
-result = (knn(X, y, sampleData, 3))
-# print(result)
-if(result == 0):
-	print("The animal is NOT a pet")
-else:
-	print("The animal is a pet")
+def accuracy(y_true, y_pred):
+	correct = 0
+	for i in range(len(y_true)):
+		if y_true.iloc[i] == y_pred[i]:
+			correct += 1
+	return correct / len(y_true)
+
+accuracy = accuracy(y_test, y_pred)
+print("Accuracy: ", accuracy)
