@@ -1,13 +1,13 @@
 import numpy as np
 import pandas as pd
 
-data = pd.read_csv('animal dataset.csv')\
+data = pd.read_csv('dataset/animal dataset.csv')\
 
-name = data.iloc[:, 1]
-data = data.iloc[1:, 3:]
+name = data.iloc[:, 1] #Only get the name row
+data = data.iloc[1:, 3:] #Skip First Row and first 3 columns
 
-X = data.iloc[:, :-1]
-y = data.iloc[:, -1]
+X = data.iloc[:, :-1] #Get all except last column
+y = data.iloc[:, -1] #Get last column only
 
 def train_test_split(X, y, test_size=0.2):
 	split_index = int(len(X) * (1 - test_size))
@@ -39,9 +39,9 @@ def knn(X_train, y_train, X_Test, k):
 		print("Nearest Indice of",name[testCount+split_index-1],":",nearest_indices)
 
 		nearest_labels = [y_train.iloc[i] for i in nearest_indices]
-		print(name[nearest_indices[0]], "is", nearest_labels[0])
-		print(name[nearest_indices[1]], "is", nearest_labels[1])
-		print(name[nearest_indices[2]], "is", nearest_labels[2])
+		for i in range(k):
+			print(name[nearest_indices[i]], "is", nearest_labels[i])
+
 		#print("Nearest label of current pet",nearest_labels)
 
 		predicted_label = max(set(nearest_labels), key=nearest_labels.count)
@@ -56,7 +56,7 @@ def knn(X_train, y_train, X_Test, k):
 	print("Number of cases checked:", testCount)
 	return y_pred
 
-y_pred = (knn(X_train, y_train, X_test, 3))
+y_pred = (knn(X_train, y_train, X_test, 5))
 print(y_pred)
 
 def accuracy(y_true, y_pred):
