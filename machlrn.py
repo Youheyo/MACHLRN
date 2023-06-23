@@ -3,20 +3,23 @@ import pandas as pd
 
 data = pd.read_csv('animal dataset.csv')
 
-X = data.iloc[:, -1]
-y = data.iloc[:, :-1]
+data = data.iloc[1:]
+
+X = data.iloc[:, :-1]
+y = data.iloc[:, -1]
+print(X)
 
 def train_test_split(X, y, test_size=0.2):
     split_index = int(len(X) * (1 - test_size))
-    X_train, X_test = X[:split_index], X[split_index:]
-    y_train, y_test = y[:split_index], y[split_index:]
+    X_train, X_test = X[1:split_index], X[split_index:]
+    y_train, y_test = y[1:split_index], y[split_index:]
     return X_train, X_test, y_train, y_test
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 def euclidean_distance(point1, point2):
-	dist = (point1 - point2) ** 2
-	return np.sqrt(dist)
+	dist = np.sqrt(np.sum((point1 - point2) ** 2))
+	return dist
 
 def knn(X_train, y_train, X_Test, k):
 	y_prediction = []
