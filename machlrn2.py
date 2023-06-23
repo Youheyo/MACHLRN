@@ -15,7 +15,7 @@ def train_test_split(X, y, test_size=0.2):
 	y_train, y_test = y[1:split_index], y[split_index:]
 	return X_train, X_test, y_train, y_test, split_index
 
-X_train, X_test, y_train, y_test, split_index = train_test_split(X, y, 0.1)
+X_train, X_test, y_train, y_test, split_index = train_test_split(X, y, 0.5)
 
 # print("X Train list", X_train)
 # print("X Test list", X_test)
@@ -56,7 +56,7 @@ def knn(X_train, y_train, X_Test, k):
 	print("Number of cases checked:", testCount)
 	return y_pred
 
-y_pred = (knn(X_train, y_train, X_test, 5))
+y_pred = (knn(X_train, y_train, X_test, 3))
 print(y_pred)
 
 def accuracy(y_true, y_pred):
