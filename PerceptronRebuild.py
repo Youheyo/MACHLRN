@@ -36,7 +36,7 @@ class Perceptron:
 
     def train(self, X, y, learning_rate=0.1, num_epochs=100):
         for _ in range(num_epochs):
-            for i, data in enumerate(X):
+            for i, _ in enumerate(X):
                 x = X[i]
                 y_true = y[i]
                 y_pred = self.predict(x)
@@ -51,14 +51,18 @@ perceptron = Perceptron(num_features=X_train.shape[1])
 perceptron.train(X_train, y_train)
 
 # Test the model
-accuracy = 0
-for i, test_data in enumerate(X_test)):
-    x = X_test[i]
-    y_true = y_test[i]
-    y_pred = perceptron.predict(x)
 
-    if y_pred == y_true:
-        accuracy += 1
+def accuracy(X_test):
+    accuracy = 0
+    for i, test_data in enumerate(X_test):
+        x = X_test[i]
+        y_true = y_test[i]
+        y_pred = perceptron.predict(x)
 
-accuracy /= len(X_test)
-print("Accuracy:", accuracy)
+        if y_pred == y_true:
+            accuracy += 1
+
+    accuracy /= len(X_test)
+    return accuracy
+
+print("Accuracy:", accuracy(X_test))
