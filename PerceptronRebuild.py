@@ -36,7 +36,7 @@ class Perceptron:
 
     def train(self, X, y, learning_rate=0.1, num_epochs=100):
         for _ in range(num_epochs):
-            for i in range(len(X)):
+            for i, data in enumerate(X):
                 x = X[i]
                 y_true = y[i]
                 y_pred = self.predict(x)
@@ -52,7 +52,7 @@ perceptron.train(X_train, y_train)
 
 # Test the model
 accuracy = 0
-for i in range(len(X_test)):
+for i, test_data in enumerate(X_test)):
     x = X_test[i]
     y_true = y_test[i]
     y_pred = perceptron.predict(x)
