@@ -40,12 +40,6 @@ dataset = pd.read_csv('dataset/kNN Internet Survey Sheet_modified.csv')
 featureset = dataset.iloc[:, 4:-1]
 labelset = dataset.iloc[:, -1]
 
-# * SPLITTING OF DATA
-# Split the dataset for training and testing
-X_train, X_test, y_train, y_test = Split_Data(featureset, labelset, test_size=0.8)
-X_train, X_test, y_train, y_test = X_train.values.astype(float), X_test.values.astype(float), y_train.values.astype(float), y_test.values.astype(float)
-
-
 class Perceptron:
     def __init__(self, num_features):
         # Initialize the weights and bias to zeros
@@ -75,14 +69,6 @@ class Perceptron:
             
         print("TRAINING COMPLETE with..\n", learning_rate * 100, "% learning rate and", iter, "iterations")
 
-# Create a perceptron
-perceptron = Perceptron(num_features=X_train.shape[1])
-
-# * Train the perceptron
-perceptron.train(X_train, y_train, learning_rate=0.05,iter=100)
-
-# Testing
-
 def Accuracy_Test(X_test):
     accuracy = 0
     tp = fp = tn = fn = 0
@@ -111,7 +97,30 @@ def Accuracy_Test(X_test):
     print("Accuracy:", accuracy)
     print("True Positive:", tp, "\tFalse Positive:", fp, "\nFalse Negative:", fn,"\tTrue Negative:", tn)
 
-# ? Not sure if needed but it'd be nice especially if have to present
+# ? Not sure if needed but it'd be nice especially if have to present code
 # TODO Refactor to allow user input
+
+#Start of user input
+user_input_test_size = int(input("Enter Test size (20 - 80):"))
+user_input_test_size /= 100
+user_input_iterations = int(input("Input Amount of Iterations:"))
+
+#Input check
+if user_input_test_size < 20 or user_input_test_size > 80:
+    print("Entered Test size was incompatible. Default values are set")
+    user_input_test_size = 0.2
+if user_input_iterations <= 0: user_input_iterations = 100
+
+
+# * SPLITTING OF DATA
+# Split the dataset for training and testing
+X_train, X_test, y_train, y_test = Split_Data(featureset, labelset, test_size=user_input_test_size)
+X_train, X_test, y_train, y_test = X_train.values.astype(float), X_test.values.astype(float), y_train.values.astype(float), y_test.values.astype(float)
+
+# Create a perceptron
+perceptron = Perceptron(num_features=X_train.shape[1])
+
+# * Train the perceptron
+perceptron.train(X_train, y_train, learning_rate=0.05,iter=user_input_iterations)
 
 Accuracy_Test(X_test)
