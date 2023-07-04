@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import random
 
 def Split_Data(data, label, test_size=0.2):
     print("Splitting Data for", test_size * 100 , "% test size")
@@ -10,6 +9,7 @@ def Split_Data(data, label, test_size=0.2):
     return X_train, X_test, y_train, y_test
 
 # * Old Way of loading dataset and contains original dataset
+# ! Current dataset has a random risk taker tag attached which was done via excel
 # ! Utilizes Original Dataset where the risk taker tag is undefined and has extra text
 # ! Should still be usable with current code but haven't tested
 
