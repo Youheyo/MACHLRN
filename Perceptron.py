@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import random
 
 def Split_Data(data, label, test_size=0.2):
     print("Splitting Data for", test_size * 100 , "% test size")
@@ -8,13 +9,11 @@ def Split_Data(data, label, test_size=0.2):
     y_train, y_test = label[:split_index], label[split_index:]
     return X_train, X_test, y_train, y_test
 
-# TODO: Create a split that randomizes the size
-
 # * Old Way of loading dataset and contains original dataset
 # ! Utilizes Original Dataset where the risk taker tag is undefined and has extra text
 # ! Should still be usable with current code but haven't tested
-"""
 
+"""
 # Load the dataset
     dataset = pd.read_csv('dataset/kNN Internet Survey Sheet.csv')
 
@@ -33,12 +32,6 @@ def Split_Data(data, label, test_size=0.2):
     X_test = testing_data[:, :-3]
     y_test = testing_data[:, -4]
 """
-
-dataset = pd.read_csv('dataset/kNN Internet Survey Sheet_modified.csv')
-
-# Split features and labels
-featureset = dataset.iloc[:, 4:-1]
-labelset = dataset.iloc[:, -1]
 
 class Perceptron:
     def __init__(self, num_features):
@@ -77,8 +70,7 @@ def Accuracy_Test(X_test):
         x = X_test[i]
         y_true = y_test[i]
         y_pred = perceptron.predict(x)
-
-        
+    
         if y_pred == y_true == 1:
             tp += 1
             accuracy += 1
@@ -94,32 +86,40 @@ def Accuracy_Test(X_test):
     accuracy /= len(X_test)
     
     print("---------------\nTEST COMPLETE")
+    print("Total Cases:", tp+fp+fn+tn)
     print("Accuracy:", accuracy)
     print("True Positive:", tp, "\tFalse Positive:", fp, "\nFalse Negative:", fn,"\tTrue Negative:", tn)
 
-# ? Not sure if needed but it'd be nice especially if have to present code
-# TODO Refactor to allow user input
+#Loading Dataset
+dataset = pd.read_csv('dataset/kNN Internet Survey Sheet_modified.csv')
+dataset = dataset.values.astype(float)
 
 #Start of user input
-user_input_test_size = int(input("Enter Test size (20 - 80):"))
-user_input_test_size /= 100
-user_input_iterations = int(input("Input Amount of Iterations:"))
+user_input_test_size = int(input("Enter Test size (20 - 80): "))
+user_input_iterations = int(input("Input Amount of Iterations: "))
+randomize_check = input("Randomize dataset? [Y/N]: ")
+#End of User Input
 
-#Input check
+#Start of input
 if user_input_test_size < 20 or user_input_test_size > 80:
     print("Entered Test size was incompatible. Default values are set")
     user_input_test_size = 0.2
+else:
+    user_input_test_size /= 100
 if user_input_iterations <= 0: user_input_iterations = 100
+if randomize_check == 'Y' or 'y':
+    np.random.shuffle(dataset)
+#Input Checking End
 
-
-# * SPLITTING OF DATA
+# Start of data splitting
+# Split features and labels
+featureset = dataset[:, 4:-1] # ? Skips first 4 columns as per MC01 Specs
+labelset = dataset[:, -1] # ? Only takes last column aka labels
 # Split the dataset for training and testing
 X_train, X_test, y_train, y_test = Split_Data(featureset, labelset, test_size=user_input_test_size)
-X_train, X_test, y_train, y_test = X_train.values.astype(float), X_test.values.astype(float), y_train.values.astype(float), y_test.values.astype(float)
 
 # Create a perceptron
 perceptron = Perceptron(num_features=X_train.shape[1])
-
 # * Train the perceptron
 perceptron.train(X_train, y_train, learning_rate=0.05,iter=user_input_iterations)
 
