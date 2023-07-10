@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import numpy as np
 import pandas as pd
 
@@ -88,7 +90,7 @@ def Accuracy_Test(X_test):
     print("---------------\nTEST COMPLETE")
     print("Total Cases:", tp+fp+fn+tn)
     print("Accuracy:", accuracy)
-    print("True Positive:", tp, "\tFalse Positive:", fp, "\nFalse Negative:", fn,"\tTrue Negative:", tn)
+    print("True Positive:", tp, "\tFalse Negative:", fn, "\nFalse Positive:", fp,"\tTrue Negative:", tn)
 
 #Loading Dataset
 dataset = pd.read_csv('dataset/kNN Internet Survey Sheet_modified.csv')
@@ -124,3 +126,9 @@ perceptron = Perceptron(num_features=X_train.shape[1])
 perceptron.train(X_train, y_train, learning_rate=0.05,iter=user_input_iterations)
 
 Accuracy_Test(X_test)
+
+from KNN import KNN
+knn = KNN()
+knn_pred = knn.predict(X_train, y_train, X_test, k = 3)
+
+print("\nKNN Accuracy:", knn.accuracy(y_true = y_test, y_pred = knn_pred))
