@@ -10,30 +10,7 @@ def Split_Data(data, label, test_size=0.2):
     y_train, y_test = label[:split_index], label[split_index:]
     return X_train, X_test, y_train, y_test
 
-# * Old Way of loading dataset and contains original dataset
 # ! Current dataset has a random risk taker tag attached which was done via excel
-# ! Utilizes Original Dataset where the risk taker tag is undefined and has extra text
-# ! Should still be usable with current code but haven't tested
-
-"""
-# Load the dataset
-    dataset = pd.read_csv('dataset/kNN Internet Survey Sheet.csv')
-
-    # Remove the column labels from the first row and the first four columns
-    dataset = dataset.iloc[1:, 4:]
-
-    # Split the dataset into training and testing sets
-    training_data = dataset[103:].values.astype(float)
-    testing_data = dataset[:100].values.astype(float)
-
-    # Extract the features and labels from the training data
-    X_train = training_data[:, :-3]
-    y_train = training_data[:, -3]
-
-    # Extract the features and labels from the testing data
-    X_test = testing_data[:, :-3]
-    y_test = testing_data[:, -4]
-"""
 
 class Perceptron:
     def __init__(self, num_features):
@@ -127,8 +104,10 @@ perceptron.train(X_train, y_train, learning_rate=0.05,iter=user_input_iterations
 
 Accuracy_Test(X_test)
 
-from KNN import KNN
-knn = KNN()
-knn_pred = knn.predict(X_train, y_train, X_test, k = 3)
 
-print("\nKNN Accuracy:", knn.accuracy(y_true = y_test, y_pred = knn_pred))
+if(input("Compare against KNN? [Y/N]:") == 'Y' or 'y'):
+    from KNN import KNN
+    knn = KNN()
+    knn_pred = knn.predict(X_train, y_train, X_test, k = 3)
+
+    print("\nKNN Accuracy:", knn.accuracy(y_true = y_test, y_pred = knn_pred))
