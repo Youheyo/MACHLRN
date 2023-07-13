@@ -89,7 +89,7 @@ except (TypeError, ValueError):
     user_input_test_size = 0.2
 
 try:
-    user_learning_rate = int(input("Enter Learning Rate:"))
+    user_learning_rate = float(input("Enter Learning Rate:"))
     if(user_learning_rate <= 0):
         print("Learning Rate invalid. Default Values are set")
         user_learning_rate = 0.01
