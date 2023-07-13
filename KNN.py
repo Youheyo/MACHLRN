@@ -30,11 +30,31 @@ class KNN:
 		return y_pred
 
 	def accuracy(self, y_true, y_pred):
-		correct = 0
+		accuracy = 0
+		tp = fp = tn = fn = 0
 		for i in range(len(y_true)):
-			if y_true[i] == y_pred[i]:
-				correct += 1
-		return correct / len(y_true)
+			if y_true[i] == y_pred[i] == 1:
+				tp += 1
+				accuracy += 1
+			elif y_pred[i] == 1 and y_true[i] == 0:
+				fp += 1
+			elif y_pred[i] == 0 and y_true[i] == 1:
+				fn += 1
+			elif y_pred[i] == y_true[i] == 0:
+				tn += 1
+				accuracy += 1
+		
+		accuracy /= len(y_true)
+
+		print("---------------\nTEST COMPLETE")
+		print("Total Cases:", tp+fp+fn+tn)
+		print("True Positive:", tp, "\tFalse Negative:", fn, "\nFalse Positive:", fp,"\tTrue Negative:", tn)
+		
+		print("Precision:", tp/(tp+fp))
+		print("Accuracy:", accuracy)
+		print("Recall:", tp/(tp+fn))
+		print("Specificity:", tn/(tn+fp))
+		print("F-Measure:", (2 * (tp/(tp+fp)) * (tp/(tp+fn)) / ((tp/(tp+fp)) + (tp/(tp+fn))) ) )
 	
 # dataset = pd.read_csv('dataset/kNN Internet Survey Sheet_modified.csv')
 # dataset = dataset.values.astype(float)

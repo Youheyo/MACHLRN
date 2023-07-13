@@ -50,14 +50,14 @@ def Accuracy_Test(X_test):
         y_true = y_test[i]
         y_pred = perceptron.predict(x)
     
-        if y_pred == y_true == 1:
+        if y_pred == 1 and y_true == 1:
             tp += 1
             accuracy += 1
         elif y_pred == 1 and y_true == 0:
             fp += 1
         elif y_pred == 0 and y_true == 1:
             fn += 1
-        elif y_pred == y_true == 0:
+        elif y_pred == 0 and y_true == 0:
             tn += 1
             accuracy += 1
         test_num+=1
@@ -66,31 +66,55 @@ def Accuracy_Test(X_test):
     
     print("---------------\nTEST COMPLETE")
     print("Total Cases:", tp+fp+fn+tn)
-    print("Accuracy:", accuracy)
     print("True Positive:", tp, "\tFalse Negative:", fn, "\nFalse Positive:", fp,"\tTrue Negative:", tn)
+    
+    print("Precision:", tp/(tp+fp))
+    print("Accuracy:", accuracy)
+    print("Recall:", tp/(tp+fn))
+    print("Specificity:", tn/(tn+fp))
+    print("F-Measure:", (2 * (tp/(tp+fp)) * (tp/(tp+fn)) / ((tp/(tp+fp)) + (tp/(tp+fn))) ) )
 
 #Loading Dataset
-dataset = pd.read_csv('dataset/kNN Internet Survey Sheet_modified.csv')
+dataset = pd.read_csv('dataset/MCO1 New InternetSurveyDataset.csv')
 dataset = dataset.values.astype(float)
 
-#Start of user input
-user_input_test_size = int(input("Enter Test size (20 - 80): "))
-user_input_iterations = int(input("Input Amount of Iterations: "))
-randomize_check = input("Randomize dataset? [Y/N]: ")
-#End of User Input
-
-#Start of input
-if user_input_test_size < 20 or user_input_test_size > 80:
-    print("Entered Test size was incompatible. Default values are set")
+#User Input
+try:
+    user_input_test_size = int(input("Enter Test size (20 - 80): "))
+    if user_input_test_size < 20 or user_input_test_size > 80:
+        print("Entered Test size was incompatible. Default values are set")
+        user_input_test_size = 0.2
+    else:
+        user_input_test_size /= 100
+except (TypeError, ValueError):
+    print("Input was invalid. Default values are set")
     user_input_test_size = 0.2
-else:
-    user_input_test_size /= 100
-if user_input_iterations <= 0: user_input_iterations = 100
-if randomize_check == 'Y' or 'y':
-    np.random.shuffle(dataset)
-#Input Checking End
 
-# Start of data splitting
+try:
+    user_learning_rate = int(input("Enter Learning Rate:"))
+    if(user_learning_rate <= 0):
+        print("Learning Rate invalid. Default Values are set")
+        user_learning_rate = 0.01
+    else:
+        user_learning_rate /= 100
+except (TypeError, ValueError):
+    print("Input was invalid. Default values are set")
+    user_learning_rate = 0.01
+
+try:
+    user_input_iterations = int(input("Input Amount of Iterations: "))
+    if user_input_iterations <= 0: 
+        print("Cannot be 0 or negative. Default values are set")
+        user_input_iterations = 100
+except (TypeError, ValueError):
+    print("Input was invalid. Default values are set")
+    user_input_iterations = 100
+
+randomize_check = input("Randomize dataset? [Y/N]: ")
+if randomize_check in ['Y', 'y']:
+    np.random.shuffle(dataset)
+
+# Data splitting
 # Split features and labels
 featureset = dataset[:, 4:-1] # ? Skips first 4 columns as per MC01 Specs
 labelset = dataset[:, -1] # ? Only takes last column aka labels
@@ -100,14 +124,15 @@ X_train, X_test, y_train, y_test = Split_Data(featureset, labelset, test_size=us
 # Create a perceptron
 perceptron = Perceptron(num_features=X_train.shape[1])
 # * Train the perceptron
-perceptron.train(X_train, y_train, learning_rate=0.05,iter=user_input_iterations)
+perceptron.train(X_train, y_train, learning_rate=user_learning_rate,iter=user_input_iterations)
 
 Accuracy_Test(X_test)
 
 
-if(input("Compare against KNN? [Y/N]:") == 'Y' or 'y'):
+if(input("\nCompare against KNN? [Y/N]:") in ['y', 'Y']):
     from KNN import KNN
     knn = KNN()
-    knn_pred = knn.predict(X_train, y_train, X_test, k = 3)
-
-    print("\nKNN Accuracy:", knn.accuracy(y_true = y_test, y_pred = knn_pred))
+    knn_pred = knn.predict(X_train, y_train, X_test, k = int(input("Please enter k:")))
+    knn.accuracy(y_true = y_test, y_pred = knn_pred)
+else: 
+    pass
