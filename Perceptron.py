@@ -30,14 +30,12 @@ class Perceptron:
     def train(self, X, y, learning_rate=0.1, iter=100):
 
         for _ in range(iter):
-            for i, _ in enumerate(X):
-                x = X[i]
-                y_true = y[i]
-                y_pred = self.predict(x)
+            for i, x_i in enumerate(X):
+                y_pred = self.predict(x_i)
                 
                 # Update weights and bias based on prediction error
-                self.weights += learning_rate * (y_true - y_pred) * x
-                self.bias += learning_rate * (y_true - y_pred)
+                self.weights += learning_rate * (y[i] - y_pred) * x_i
+                self.bias += learning_rate * (y[i] - y_pred)
             
         print("TRAINING COMPLETE with..\n", learning_rate * 100, "% learning rate and", iter, "iterations")
 
