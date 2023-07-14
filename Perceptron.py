@@ -114,7 +114,7 @@ if randomize_check in ['Y', 'y']:
 
 # Data splitting
 # Split features and labels
-featureset = dataset[:, 4:-1] # ? Skips first 4 columns as per MC01 Specs
+featureset = dataset[:, :-1] # ? Skips first 4 columns as per MC01 Specs
 labelset = dataset[:, -1] # ? Only takes last column aka labels
 # Split the dataset for training and testing
 X_train, X_test, y_train, y_test = Split_Data(featureset, labelset, test_size=user_input_test_size)
