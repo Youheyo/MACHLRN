@@ -30,6 +30,7 @@ TODO Radius starts at 3, 2, 1
 def train_SOM(SOM, X_train, learning_rate = .5, radius = 3, lr_decay = .1, radius_decay = .1, iter = 10):
     for iter in range(iter):
         #rand.shuffle(X_train)
+        print("Iteration:", iter)
         for x in X_train:
             g, h, = find_BMU(SOM, x)
             SOM = update_weights(SOM, x, learning_rate, radius, (g,h))
@@ -44,7 +45,7 @@ dataset = dataset.iloc[:, :-1].values.astype(float) # ? Everything but risk take
 #Grid Dimension
 grid = 16 # 16x16 grid
 
-weights = np.random.random_integers(0,1, dataset.shape)
+weights = np.random.randint(0,1, dataset.shape[1])
 
 SOM = train_SOM(dataset, weights, iter=5)
 print(SOM)
