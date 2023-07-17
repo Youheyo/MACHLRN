@@ -6,9 +6,6 @@ import time
 dataset = pd.read_csv('dataset/MCO1 New InternetSurveyDataset.csv')
 dataset = dataset.values.astype(float)
 
-#plt.ion()
-figure, ax = plt.subplots(figsize=(10,10))
-
 def adjust_time(time):
 	if time > 86400:
 		time /= 86400
@@ -80,12 +77,10 @@ class SOM:
 				predicted_eta, time_unit = adjust_time(predicted_eta)
 				print("Estimated Finish time:", round(predicted_eta, 2), time_unit)
 
-			ax.set_title(f"Iteration: {iter+1}")
-			#KMeans(data)
-		
 		if debug is True:
 			et = time.time()
-			print("Code ran for", et - st)
+			total_time, time_unit= adjust_time(et - st)
+			print("Code ran for", total_time, time_unit)
 			print("Avg Runtime per iteration:", round(avg_eta , 2))
 
 
@@ -104,16 +99,17 @@ def KMeans(data, k = 5):
 		for i in range(k):
 			centroids[i] = np.mean(kmeans_data[labels == i], axis = 0)
 
-		ax.clear()
-		ax.scatter(kmeans_data[:, 0], kmeans_data[:, 1], c=labels, cmap='viridis')
-		ax.scatter(centroids[:, 0], centroids[:, 1], c='red', marker='x')
-		ax.set_xlabel("Feature 1")
-		ax.set_ylabel("Feature 2")
-		plt.pause(0.1)  # Pause for a short duration to show the plot
+	plt.figure(figsize=(8, 8))
+	plt.scatter(kmeans_data[:, 0], kmeans_data[:, 1], c=labels, cmap='viridis')
+	plt.scatter(centroids[:, 0], centroids[:, 1], c='red', marker='x')
+	plt.title("K-means Clustering")
+	plt.xlabel("Feature 1")
+	plt.ylabel("Feature 2")
+	plt.show()
 
 	#plt.show()
 
-som = SOM(16, dataset.shape[1], iter = 100)
+som = SOM(16, dataset.shape[1], iter = 5)
 som.train(dataset, debug = True)
 
 KMeans(dataset, k = 5)
