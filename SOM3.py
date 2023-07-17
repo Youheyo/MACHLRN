@@ -108,7 +108,7 @@ def KMeans(data, k = 5):
 
     #plt.show()
 
-som = SOM(16, dataset.shape[1], iter = 10)
+som = SOM(16, dataset.shape[1], iter = 100)
 som.train(data, debug = True)
 
 KMeans(data, k = 5)
