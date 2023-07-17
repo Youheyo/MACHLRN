@@ -154,4 +154,3 @@ cython_debug/
 #Extra ignores
 Tutorial/*
 Scrapped/*
-Specs/*

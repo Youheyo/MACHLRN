@@ -1,0 +1,88 @@
+MCO 2 : Implementation of Self-Organizing Maps (Unsupervised Learning)
+
+
+1. Write a program (using your preferred programming language) to implement a simple SOM that clusters different profiles of children based on their Internet usage, using the same Internet Survey Dataset as in MCO1
+
+2. The first 4 features (B1, B3, B4, B5) are also not to be used for the SOM training, so you will need to drop these 4 features from your training.
+
+3. The “risk-taker” tag at the last column is also not used for SOM training.
+ 
+
+4. Construct a 16x16 SOM (256 nodes) using the following learning parameters. Note that each node has the same number of weights as there are input features during training.
+ 
+
+	Maximum number of training cycles is set at 100,000
+	Learning rate is set at 0.5 at the start of training, then decreases to 0.25 after 50,000 cycles; then decreases to 0.1 after 75,000 cycles
+	The neighborhood radius starts at 3 at the start of training, then decreases to 2 after 50,000 cycles; then decreases to 1 after 75,000 cycles
+ 
+
+5. After training, run k-Means Algorithm with k=5 on the 256 nodes, using their weights as basis for clustering, and label the nodes with their corresponding cluster numbers.
+ 
+
+6. Also after training, pass thru the entire training set to identify the “nearest” sample for each of the 256 nodes in the map. Use the same distance or similarity metric that you used during training.
+
+7. Among all the nodes of each cluster, based on the “nearest sample” of each node, compile the percentages for the values of 0 and 1 for each of B1, B3, B4, B5 and Risk-Taker tag.
+
+	For example :
+
+		Cluster 1 :
+
+		
+
+		35% Male, 65% Female
+
+		22% age 9-11, 78% age 12-17
+
+		13% Low Income, 87% Mid/High Income
+
+		5% Rural, 95% Urban
+
+		12% non-Risk Taker, 88% Risk-Taker
+
+		
+
+		Cluster 2 :
+
+		
+
+		55% Male, 45% Female
+
+		11% age 9-11, 89% age 12-17
+
+		12% Low Income, 88% Mid/High Income
+
+		15% Rural, 85% Urban
+
+		42% non-Risk Taker, 58% Risk-Taker
+
+		
+
+		Cluster 3, Cluster 4, Cluster 5
+
+8. Also compile the global profile of all the samples, as follows.
+	Global Profile :
+
+	51% Male, 49% Female
+
+	44% age 9-11, 56% age 12-17
+
+	82% Low Income, 18% Mid/High Income
+
+	75% Rural, 25% Urban
+
+	72% non-Risk Taker, 28% Risk-Taker
+
+9. You are encouraged to present the results for #7 and #8 in some creative and effective manner
+ 
+
+10. Be guided by the uploaded rubric for assessment
+ 
+11. Deadline is on Week 11 (July 21, Friday, 2PM)
+
+Optional (plus points):
+
+12. Without doing a SOM, use k-Means directly on the training set, for k=5.
+
+13. Compile the same global and cluster-level information as #7 and #8 above.
+
+14. Consider various other datasets, including datasets that you are considering to use for MCO3/4.
