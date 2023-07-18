@@ -57,7 +57,7 @@ class SOM:
 			
 			#region Start of Iteraton Time tracking
 			if debug is True:
-				print("Current Iteration:", iter, "/", self.iterations)
+				print("Current Iteration:", iter+1, "/", self.iterations)
 				iterStartTime = time.time()
 			#endregion
 			#region Parameter adjustment on cycle
@@ -91,11 +91,11 @@ class SOM:
 			#endregion
 		#endregion
 
+		et = time.time()
+		total_time, time_unit= adjust_time(et - st)
+		print("Code ran for", round(total_time,2), time_unit)
 		#region Debug End Statistics
 		if debug is True:
-			et = time.time()
-			total_time, time_unit= adjust_time(et - st)
-			print("Code ran for", round(total_time,2), time_unit)
 			print("Avg Runtime per iteration:", round(avg_eta , 2))
 		#endregion
 
