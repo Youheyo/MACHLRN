@@ -44,44 +44,60 @@ class SOM:
 				self.weights[x, y] += influence * (data - self.weights[x, y])
 
 	def train(self, data, debug = False):
+		#region Debug Time Start
 		if debug is True:
 			st = time.time()
-			ETA = []
+			total_predicted_time = 0
+			#ETA = []
 			print("Som Training has started")
+		#endregion
+
+		#region Iteration Algorithm
 		for iter in range(self.iterations):
 			
+			#region Start of Iteraton Time tracking
 			if debug is True:
-				print("Current Iteration:", iter)
+				print("Current Iteration:", iter, "/", self.iterations)
 				iterStartTime = time.time()
+			#endregion
+			#region Parameter adjustment on cycle
 			if iter > 75000:
 				self.learning_rate = 0.1
 				self.radius = 1
 			elif iter > 50000:
 				self.learning_rate = 0.25
 				self.radius = 2
-
+			#endregion
+			#region Algorithm Proper
 			for row in data:
 				bmu = self.find_bmu(row)
 
 				self.update_weights(row, bmu)
-
+			#endregion
+			#region Debug Time Increments
 			if debug is True:
 				iterEndTime = time.time()
 				# ? ETA of a single Runtime
-				ETA.append(iterEndTime - iterStartTime)
+				#ETA.append(iterEndTime - iterStartTime)
+				total_predicted_time += (iterEndTime - iterStartTime)
 				# ? Average Runtime
-				avg_eta = sum(ETA) / len(ETA)
+				#avg_eta = sum(ETA) / len(ETA)
+				avg_eta = total_predicted_time / (iter+1)
 				# ? Predicted ETA from Average runtime
 				predicted_eta = (self.iterations - iter) * avg_eta
 
 				predicted_eta, time_unit = adjust_time(predicted_eta)
 				print("Estimated Finish time:", round(predicted_eta, 2), time_unit)
+			#endregion
+		#endregion
 
+		#region Debug End Statistics
 		if debug is True:
 			et = time.time()
 			total_time, time_unit= adjust_time(et - st)
-			print("Code ran for", total_time, time_unit)
+			print("Code ran for", round(total_time,2), time_unit)
 			print("Avg Runtime per iteration:", round(avg_eta , 2))
+		#endregion
 
 
 def KMeans(data, k = 5):
