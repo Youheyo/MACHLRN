@@ -54,7 +54,7 @@ class SOM:
 
 		#region Iteration Algorithm
 		for iter in range(self.iterations):
-			
+			np.random.shuffle(data)
 			#region Start of Iteraton Time tracking
 			if debug is True:
 				print("Current Iteration:", iter+1, "/", self.iterations)
@@ -69,10 +69,17 @@ class SOM:
 				self.radius = 2
 			#endregion
 			#region Algorithm Proper
-			for row in data:
-				bmu = self.find_bmu(row)
+			# ? Loops through the whole dataset causing it to be longer
+			# for row in data:
+			# 	bmu = self.find_bmu(row)
 
-				self.update_weights(row, bmu)
+			# 	self.update_weights(row, bmu)
+
+			# ? Randomizes and loops on a single row of data
+			row = data[np.random.randint(0, data.shape[0])]
+			bmu = self.find_bmu(row)
+
+			self.update_weights(row,bmu)
 			#endregion
 			#region Debug Time Increments
 			if debug is True:
@@ -121,14 +128,11 @@ def KMeans(data, k = 5):
 	plt.title("K-means Clustering")
 	plt.xlabel("Feature 1")
 	plt.ylabel("Feature 2")
-	plt.show()
-
 	#plt.show()
 
-som = SOM(16, dataset.shape[1], iter = 5)
+som = SOM(16, dataset.shape[1], iter = 50)
 som.train(dataset, debug = True)
 
 KMeans(dataset, k = 5)
 
 plt.show()
-
