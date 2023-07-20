@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from sklearn.cluster import KMeans
 
 dataset = pd.read_csv('dataset/MCO1 New InternetSurveyDataset.csv')
 
@@ -184,10 +183,3 @@ som.train(dataset)
 
 labels, centroids = KMeans_Cluster(dataset, k = 5, iter = 100)
 plot(labels, centroids, dataset)
-
-# ! Comparing with sklearn knn remove befoer submission along side import (line 7)
-# * It looks similar btw
-# kmeans = KMeans(n_clusters = 5, max_iter=100)
-# labels = kmeans.fit_predict(som.weights.reshape(-1, som.feature_dim))
-
-# plot(labels, kmeans.cluster_centers_, dataset)
