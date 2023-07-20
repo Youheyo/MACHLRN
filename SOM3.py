@@ -99,6 +99,9 @@ def plot(labels, centroids, data):
 
 	total_data = np.zeros(5)
 
+	figure, ax = plt.subplots(6, 6, figsize=(15,15), squeeze = False)
+	plt.suptitle("Cluster Stats")
+
 	for i in range(5):
 	# Group the DataFrame by cluster and calculate the percentage of features 1 and 2
 		cluster_data = cluster_df.loc[cluster_df['Cluster'] == i]
@@ -116,24 +119,23 @@ def plot(labels, centroids, data):
 		print(f"{rural[0]}% Rural \t\t {rural[1]} Urban ")
 		print(f"{rt[0]}% non-Risk-taker \t {rt[1]} Risk-taker\n")
 
-		figure, ax = plt.subplots(2, 3)
-		plt.suptitle(f"Cluster {i+1}")
-		ax[0, 0].pie([gender[0], gender[1]], labels=["Male", "Female"])
-		ax[0, 0].set_title("Gender")
+		ax[0,i].annotate(f"Cluster {i+1}", (0.1, 0.5), xycoords='axes fraction', va='center')
+		ax[0, i].axis('off')
 
-		ax[1, 0].pie([age[0], age[1]], labels=["9 - 11", "12 - 17"])
-		ax[1, 0].set_title("Age Range")
+		ax[1, i].pie([gender[0], gender[1]], labels=["Male", "Female"], autopct='%1.1f%%')
+		ax[2, i].set_title("Gender")
 
-		ax[0, 1].pie([income[0], income[1]], labels=["Low", "Mid/High"])
-		ax[0, 1].set_title("Income")
+		ax[2, i].pie([age[0], age[1]], labels=["9 - 11", "12 - 17"], autopct='%1.1f%%')
+		ax[2, i].set_title("Age Range")
 
-		ax[1, 1].pie([rural[0], rural[1]], labels=["Rural", "Urban"])
-		ax[1, 1].set_title("Rural/Urban")
+		ax[3, i].pie([income[0], income[1]], labels=["Low", "Mid/High"], autopct='%1.1f%%')
+		ax[3, i].set_title("Income")
 
-		ax[0, 2].pie([rt[0], rt[1]], labels=["Non", "Risktaker"])
-		ax[0, 2].set_title("Risk Taker")
+		ax[4, i].pie([rural[0], rural[1]], labels=["Rural", "Urban"], autopct='%1.1f%%')
+		ax[4, i].set_title("Rural/Urban")
 
-		figure.delaxes(ax[1,2])
+		ax[5, i].pie([rt[0], rt[1]], labels=["Non", "Risktaker"], autopct='%1.1f%%')
+		ax[5, i].set_title("Risk Taker")
 
 		total_data[0] += gender[0]
 		total_data[1] += age[0]
@@ -152,26 +154,24 @@ def plot(labels, centroids, data):
 	print(f"{total_data[3]}% Rural \t\t {round(100 - total_data[3],2)} Urban ")
 	print(f"{total_data[4]}% non-Risk-taker \t {round(100 - total_data[4],2)} Risk-taker\n")
 
+	ax[0,5].annotate("Global Stat", (0.1, 0.5), xycoords='axes fraction', va='center')
+	ax[0, 5].axis('off')
 
-	figure, ax = plt.subplots(2, 3)
+	ax[1, 5].pie([total_data[0], 100 - total_data[0]], labels=["Male", "Female"], autopct='%1.1f%%')
+	ax[1, 5].set_title("Gender")
 
-	figure.suptitle("Global Stats")
-	ax[0, 0].pie([total_data[0], 100 - total_data[0]], labels=["Male", "Female"])
-	ax[0, 0].set_title("Gender")
+	ax[2, 5].pie([total_data[1], 100 - total_data[1]], labels=["9 - 11", "12 - 17"], autopct='%1.1f%%')
+	ax[2, 5].set_title("Age Range")
 
-	ax[1, 0].pie([total_data[1], 100 - total_data[1]], labels=["9 - 11", "12 - 17"])
-	ax[1, 0].set_title("Age Range")
+	ax[3, 5].pie([total_data[2], 100 - total_data[2]], labels=["Low", "Mid/High"], autopct='%1.1f%%')
+	ax[3, 5].set_title("Income")
 
-	ax[0, 1].pie([total_data[2], 100 - total_data[2]], labels=["Low", "Mid/High"])
-	ax[0, 1].set_title("Income")
+	ax[4, 5].pie([total_data[3], 100 - total_data[3]], labels=["Rural", "Urban"], autopct='%1.1f%%')
+	ax[4, 5].set_title("Rural/Urban")
 
-	ax[1, 1].pie([total_data[3], 100 - total_data[3]], labels=["Rural", "Urban"])
-	ax[1, 1].set_title("Rural/Urban")
+	ax[5, 5].pie([total_data[4], 100 - total_data[4]], labels=["Non", "Risktaker"], autopct='%1.1f%%')
+	ax[5, 5].set_title("Risk Taker")
 
-	ax[0, 2].pie([total_data[4], 100 - total_data[4]], labels=["Non", "Risktaker"])
-	ax[0, 2].set_title("Risk Taker")
-
-	figure.delaxes(ax[1,2])
 
 	# plt.figure(figsize=(8, 8))
 	# plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis')
@@ -187,7 +187,7 @@ plot(labels, centroids, dataset)
 
 # ! Comparing with sklearn knn remove befoer submission along side import (line 7)
 # * It looks similar btw
-kmeans = KMeans(n_clusters = 5, max_iter=100)
-labels = kmeans.fit_predict(som.weights.reshape(-1, som.feature_dim))
+# kmeans = KMeans(n_clusters = 5, max_iter=100)
+# labels = kmeans.fit_predict(som.weights.reshape(-1, som.feature_dim))
 
-plot(labels, kmeans.cluster_centers_, dataset)
+# plot(labels, kmeans.cluster_centers_, dataset)
