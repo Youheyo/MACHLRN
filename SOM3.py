@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 import time
 
 dataset = pd.read_csv('dataset/MCO1 New InternetSurveyDataset.csv')
-dataset = dataset.values.astype(float)
+dataset = dataset.values
+# ! Replace when available
+extra_data = dataset[:, :4]
 
 def adjust_time(time):
 	if time > 86400:
@@ -45,8 +47,8 @@ class SOM:
 
 	def train(self, data, debug = False):
 		#region Debug Time Start
+		st = time.time()
 		if debug is True:
-			st = time.time()
 			total_predicted_time = 0
 			#ETA = []
 			print("Som Training has started")
@@ -77,6 +79,9 @@ class SOM:
 
 			# ? Randomizes and loops on a single row of data
 			row = data[np.random.randint(0, data.shape[0])]
+
+
+
 			bmu = self.find_bmu(row)
 
 			self.update_weights(row,bmu)
@@ -98,10 +103,10 @@ class SOM:
 			#endregion
 		#endregion
 
+		#region Debug End Statistics
 		et = time.time()
 		total_time, time_unit= adjust_time(et - st)
 		print("Code ran for", round(total_time,2), time_unit)
-		#region Debug End Statistics
 		if debug is True:
 			print("Avg Runtime per iteration:", round(avg_eta , 2))
 		#endregion
@@ -121,6 +126,23 @@ def KMeans(data, k = 5):
 
 		for i in range(k):
 			centroids[i] = np.mean(kmeans_data[labels == i], axis = 0)
+	
+	extra_data_pad = np.pad(extra_data, ((0, k - 1), (0,0)), mode='constant')
+	cluster_data = [extra_data_pad[labels == i] for i in range(k)]
+	cluster_sizes = np.bincount(labels, minlength= k)
+	cluster_percentage = []
+
+	for cl_data, cl_size in zip(cluster_data, cluster_sizes):
+		gender = np.sum(cl_data[:, 0 ]) / cl_size / 100
+		age = np.sum(cl_data[:, 1 ]) / cl_size / 100
+		cluster_percentage.append(gender, age)
+
+	for i, percentages in enumerate(cluster_percentage):
+		gender_percentage, age_range_percentage = percentages
+		print(f"Cluster {i+1}:")
+		print(f"Gender: {gender:.2f}%")
+		print(f"Age Range: {age:.2f}%")
+		print()
 
 	plt.figure(figsize=(8, 8))
 	plt.scatter(kmeans_data[:, 0], kmeans_data[:, 1], c=labels, cmap='viridis')
@@ -131,7 +153,7 @@ def KMeans(data, k = 5):
 	#plt.show()
 
 som = SOM(16, dataset.shape[1], iter = 50)
-som.train(dataset, debug = True)
+som.train(dataset, debug = False)
 
 KMeans(dataset, k = 5)
 
