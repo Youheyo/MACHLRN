@@ -2,11 +2,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+from tqdm import tqdm
 
 dataset = pd.read_csv('dataset/MCO1 New InternetSurveyDataset.csv')
-dataset = dataset.values
-# ! Replace when available
-extra_data = dataset[:, :4]
 
 def adjust_time(time):
 	if time > 86400:
@@ -47,6 +45,7 @@ class SOM:
 
 	def train(self, data, debug = False):
 		#region Debug Time Start
+		data = data.values
 		st = time.time()
 		if debug is True:
 			total_predicted_time = 0
@@ -55,7 +54,7 @@ class SOM:
 		#endregion
 
 		#region Iteration Algorithm
-		for iter in range(self.iterations):
+		for iter in tqdm(range(self.iterations), desc="Training"):
 			np.random.shuffle(data)
 			#region Start of Iteraton Time tracking
 			if debug is True:
@@ -112,7 +111,7 @@ class SOM:
 		#endregion
 
 
-def KMeans(data, k = 5):
+def KMeans_Cluster(data, k = 5, iter = 100):
 	kmeans_data = som.weights.reshape(-1, data.shape[1])
 	centroids = kmeans_data[np.random.choice(kmeans_data.shape[0], k, replace = False)]
 
@@ -120,41 +119,69 @@ def KMeans(data, k = 5):
 	# TODO Display percentages of each cluster
 	# TODO Display Global Percentage afterwards
 
-	for _ in range(100):
+	for _ in range(iter):
 		distances = np.linalg.norm(kmeans_data[:, np.newaxis] - centroids, axis = 2)
 		labels = np.argmin(distances, axis = 1)
 
 		for i in range(k):
 			centroids[i] = np.mean(kmeans_data[labels == i], axis = 0)
 	
-	extra_data_pad = np.pad(extra_data, ((0, k - 1), (0,0)), mode='constant')
-	cluster_data = [extra_data_pad[labels == i] for i in range(k)]
-	cluster_sizes = np.bincount(labels, minlength= k)
-	cluster_percentage = []
+	return labels, centroids
 
-	for cl_data, cl_size in zip(cluster_data, cluster_sizes):
-		gender = np.sum(cl_data[:, 0 ]) / cl_size / 100
-		age = np.sum(cl_data[:, 1 ]) / cl_size / 100
-		cluster_percentage.append(gender, age)
+def plot(labels, centroids, data):
+	data = som.weights.reshape(-1, data.shape[1])
+	# Create a DataFrame to store the cluster labels and feature values
+	cluster_df = pd.DataFrame({'Cluster': labels})
+	cluster_df['Gender'] = dataset['a1']
+	cluster_df['Age Range'] = dataset['a2']
+	cluster_df['Income'] = dataset['a3']
+	cluster_df['Rural/Urban'] = dataset['a4']
+	cluster_df['Risk Taker'] = dataset['RiskTaker']
 
-	for i, percentages in enumerate(cluster_percentage):
-		gender_percentage, age_range_percentage = percentages
-		print(f"Cluster {i+1}:")
-		print(f"Gender: {gender:.2f}%")
-		print(f"Age Range: {age:.2f}%")
-		print()
+	total_data = np.zeros(5)
+
+	for i in range(5):
+	# Group the DataFrame by cluster and calculate the percentage of features 1 and 2
+		cluster_data = cluster_df.loc[cluster_df['Cluster'] == i]
+		cluster_size = len(cluster_data)
+		gender = round(cluster_data['Gender'].value_counts(sort = False) / cluster_size * 100, 2) 
+		age = round(cluster_data['Age Range'].value_counts(sort = False) / cluster_size * 100, 2)
+		income = round(cluster_data['Income'].value_counts(sort = False)  / cluster_size * 100, 2)
+		rural = round(cluster_data['Rural/Urban'].value_counts(sort = False) / cluster_size * 100, 2)
+		rt = round(cluster_data['Risk Taker'].value_counts(sort = False) / cluster_size * 100, 2)
+
+		print(f"Cluster {i+1}")
+		print(f"{gender[0]}% Male \t\t {gender[1]} Female ")
+		print(f"{age[0]}% ages 9 - 11 \t {age[1]} ages 12 - 17 ")
+		print(f"{income[0]}% Low Income \t {income[1]} Mid/High Income ")
+		print(f"{rural[0]}% Rural \t\t {rural[1]} Urban ")
+		print(f"{rt[0]}% non-Risk-taker \t {rt[1]} Risk-taker\n")
+
+		total_data[0] += gender[0]
+		total_data[1] += age[0]
+		total_data[2] += income[0]
+		total_data[3] += rural[0]
+		total_data[4] += rt[0]
+
+	for i in range(total_data.size):
+		total_data[i] /= 500
+		total_data[i] = round(total_data[i]* 100, 2)
+
+	print(f"Global Data")
+	print(f"{total_data[0]}% Male \t\t {100 - total_data[0]} Female ")
+	print(f"{total_data[1]}% ages 9 - 11 \t {100 - total_data[1]} ages 12 - 17 ")
+	print(f"{total_data[2]}% Low Income \t {100 - total_data[2]} Mid/High Income ")
+	print(f"{total_data[3]}% Rural \t\t {100 - total_data[3]} Urban ")
+	print(f"{total_data[4]}% non-Risk-taker \t {100 - total_data[4]} Risk-taker\n")
 
 	plt.figure(figsize=(8, 8))
-	plt.scatter(kmeans_data[:, 0], kmeans_data[:, 1], c=labels, cmap='viridis')
+	plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis')
 	plt.scatter(centroids[:, 0], centroids[:, 1], c='red', marker='x')
 	plt.title("K-means Clustering")
-	plt.xlabel("Feature 1")
-	plt.ylabel("Feature 2")
-	#plt.show()
+	plt.show()
 
-som = SOM(16, dataset.shape[1], iter = 50)
+som = SOM(16, dataset.shape[1], iter = 100000)
 som.train(dataset, debug = False)
 
-KMeans(dataset, k = 5)
-
-plt.show()
+labels, centroids = KMeans_Cluster(dataset, k = 5, iter = 1000)
+plot(labels, centroids, dataset)
