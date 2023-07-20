@@ -1,25 +1,12 @@
+#.venv/Scripts/activate
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import time
 from tqdm import tqdm
+from sklearn.cluster import KMeans
 
 dataset = pd.read_csv('dataset/MCO1 New InternetSurveyDataset.csv')
-
-def adjust_time(time):
-	if time > 86400:
-		time /= 86400
-		time_unit = "days"
-	elif time > 3600:
-		time /= 3600
-		time_unit = "hours"
-	elif time > 60:
-		time /= 60
-		time_unit = "minutes"
-	else:
-		time_unit = "seconds"
-	return time, time_unit
-
 
 class SOM:
 	def __init__(self, size, feature_dim, iter, radius = 3, learning_rate = .5):
@@ -43,32 +30,27 @@ class SOM:
 
 				self.weights[x, y] += influence * (data - self.weights[x, y])
 
-	def train(self, data, debug = False):
-		#region Debug Time Start
+	def train(self, data):
+
 		data = data.values
-		st = time.time()
-		if debug is True:
-			total_predicted_time = 0
-			#ETA = []
-			print("Som Training has started")
-		#endregion
+		cap1 = cap2 = False
 
 		#region Iteration Algorithm
-		for iter in tqdm(range(self.iterations), desc="Training"):
+		for iter in tqdm(range(self.iterations), desc="Training SOM"):
 			np.random.shuffle(data)
-			#region Start of Iteraton Time tracking
-			if debug is True:
-				print("Current Iteration:", iter+1, "/", self.iterations)
-				iterStartTime = time.time()
-			#endregion
 			#region Parameter adjustment on cycle
-			if iter > 75000:
+			if iter > 75000 and cap2 is False:
+				tqdm.write("75,000 Iterations reached. Adjusting Parameters")
 				self.learning_rate = 0.1
 				self.radius = 1
-			elif iter > 50000:
+				cap2 = True
+			elif iter > 50000 and cap1 is False:
+				tqdm.write("50,000 Iterations reached. Adjusting Parameters")
 				self.learning_rate = 0.25
 				self.radius = 2
+				cap1 = True
 			#endregion
+
 			#region Algorithm Proper
 			# ? Loops through the whole dataset causing it to be longer
 			# for row in data:
@@ -79,45 +61,18 @@ class SOM:
 			# ? Randomizes and loops on a single row of data
 			row = data[np.random.randint(0, data.shape[0])]
 
-
-
 			bmu = self.find_bmu(row)
 
 			self.update_weights(row,bmu)
-			#endregion
-			#region Debug Time Increments
-			if debug is True:
-				iterEndTime = time.time()
-				# ? ETA of a single Runtime
-				#ETA.append(iterEndTime - iterStartTime)
-				total_predicted_time += (iterEndTime - iterStartTime)
-				# ? Average Runtime
-				#avg_eta = sum(ETA) / len(ETA)
-				avg_eta = total_predicted_time / (iter+1)
-				# ? Predicted ETA from Average runtime
-				predicted_eta = (self.iterations - iter) * avg_eta
 
-				predicted_eta, time_unit = adjust_time(predicted_eta)
-				print("Estimated Finish time:", round(predicted_eta, 2), time_unit)
 			#endregion
-		#endregion
 
-		#region Debug End Statistics
-		et = time.time()
-		total_time, time_unit= adjust_time(et - st)
-		print("Code ran for", round(total_time,2), time_unit)
-		if debug is True:
-			print("Avg Runtime per iteration:", round(avg_eta , 2))
 		#endregion
 
 
 def KMeans_Cluster(data, k = 5, iter = 100):
 	kmeans_data = som.weights.reshape(-1, data.shape[1])
 	centroids = kmeans_data[np.random.choice(kmeans_data.shape[0], k, replace = False)]
-
-	# TODO Get the Data (Gender, Age, Income, Rural/Urban, Risktaker Tag) from clusters
-	# TODO Display percentages of each cluster
-	# TODO Display Global Percentage afterwards
 
 	for _ in range(iter):
 		distances = np.linalg.norm(kmeans_data[:, np.newaxis] - centroids, axis = 2)
@@ -168,20 +123,26 @@ def plot(labels, centroids, data):
 		total_data[i] = round(total_data[i]* 100, 2)
 
 	print(f"Global Data")
-	print(f"{total_data[0]}% Male \t\t {100 - total_data[0]} Female ")
-	print(f"{total_data[1]}% ages 9 - 11 \t {100 - total_data[1]} ages 12 - 17 ")
-	print(f"{total_data[2]}% Low Income \t {100 - total_data[2]} Mid/High Income ")
-	print(f"{total_data[3]}% Rural \t\t {100 - total_data[3]} Urban ")
-	print(f"{total_data[4]}% non-Risk-taker \t {100 - total_data[4]} Risk-taker\n")
+	print(f"{total_data[0]}% Male \t\t {round(100 - total_data[0],2)} Female ")
+	print(f"{total_data[1]}% ages 9 - 11 \t {round(100 - total_data[1],2)} ages 12 - 17 ")
+	print(f"{total_data[2]}% Low Income \t {round(100 - total_data[2],2)} Mid/High Income ")
+	print(f"{total_data[3]}% Rural \t\t {round(100 - total_data[3],2)} Urban ")
+	print(f"{total_data[4]}% non-Risk-taker \t {round(100 - total_data[4],2)} Risk-taker\n")
 
 	plt.figure(figsize=(8, 8))
 	plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis')
 	plt.scatter(centroids[:, 0], centroids[:, 1], c='red', marker='x')
 	plt.title("K-means Clustering")
+	plt.grid(True)
 	plt.show()
 
-som = SOM(16, dataset.shape[1], iter = 100000)
-som.train(dataset, debug = False)
+som = SOM(16, dataset.shape[1], iter = 100)
+som.train(dataset)
 
-labels, centroids = KMeans_Cluster(dataset, k = 5, iter = 1000)
+labels, centroids = KMeans_Cluster(dataset, k = 5, iter = 100)
 plot(labels, centroids, dataset)
+
+kmeans = KMeans(n_clusters = 5, max_iter=100)
+labels = kmeans.fit_predict(som.weights.reshape(-1, som.feature_dim))
+
+plot(labels, kmeans.cluster_centers_, dataset)
