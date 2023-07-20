@@ -34,21 +34,23 @@ class SOM:
 
 		data = data.values
 		cap1 = cap2 = False
+		print("SOM training has started")
+		print(f"SOM specs: {self.size}x{self.size} grid, {self.iterations} iterations, Starts at {self.radius} radius and {self.learning_rate * 100}% learning rate")
 
 		#region Iteration Algorithm
 		for iter in tqdm(range(self.iterations), desc="Training SOM"):
 			np.random.shuffle(data)
 			#region Parameter adjustment on cycle
 			if iter > 75000 and cap2 is False:
-				tqdm.write("75,000 Iterations reached. Adjusting Parameters")
 				self.learning_rate = 0.1
 				self.radius = 1
 				cap2 = True
+				tqdm.write(f"75,000 Iterations reached. Adjusting learning rate to {self.learning_rate * 100}, Radius to {self.radius}")
 			elif iter > 50000 and cap1 is False:
-				tqdm.write("50,000 Iterations reached. Adjusting Parameters")
 				self.learning_rate = 0.25
 				self.radius = 2
 				cap1 = True
+				tqdm.write(f"50,000 Iterations reached. Adjusting learning rate to {self.learning_rate * 100}, Radius to {self.radius}")
 			#endregion
 
 			#region Algorithm Proper
@@ -68,6 +70,8 @@ class SOM:
 			#endregion
 
 		#endregion
+
+		print("SOM training Complete!")
 
 
 def KMeans_Cluster(data, k = 5, iter = 100):
@@ -112,6 +116,25 @@ def plot(labels, centroids, data):
 		print(f"{rural[0]}% Rural \t\t {rural[1]} Urban ")
 		print(f"{rt[0]}% non-Risk-taker \t {rt[1]} Risk-taker\n")
 
+		figure, ax = plt.subplots(2, 3)
+		plt.suptitle(f"Cluster {i+1}")
+		ax[0, 0].pie([gender[0], gender[1]], labels=["Male", "Female"])
+		ax[0, 0].set_title("Gender")
+
+		ax[1, 0].pie([age[0], age[1]], labels=["9 - 11", "12 - 17"])
+		ax[1, 0].set_title("Age Range")
+
+		ax[0, 1].pie([income[0], income[1]], labels=["Low", "Mid/High"])
+		ax[0, 1].set_title("Income")
+
+		ax[1, 1].pie([rural[0], rural[1]], labels=["Rural", "Urban"])
+		ax[1, 1].set_title("Rural/Urban")
+
+		ax[0, 2].pie([rt[0], rt[1]], labels=["Non", "Risktaker"])
+		ax[0, 2].set_title("Risk Taker")
+
+		figure.delaxes(ax[1,2])
+
 		total_data[0] += gender[0]
 		total_data[1] += age[0]
 		total_data[2] += income[0]
@@ -129,11 +152,31 @@ def plot(labels, centroids, data):
 	print(f"{total_data[3]}% Rural \t\t {round(100 - total_data[3],2)} Urban ")
 	print(f"{total_data[4]}% non-Risk-taker \t {round(100 - total_data[4],2)} Risk-taker\n")
 
-	plt.figure(figsize=(8, 8))
-	plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis')
-	plt.scatter(centroids[:, 0], centroids[:, 1], c='red', marker='x')
-	plt.title("K-means Clustering")
-	plt.grid(True)
+
+	figure, ax = plt.subplots(2, 3)
+
+	figure.suptitle("Global Stats")
+	ax[0, 0].pie([total_data[0], 100 - total_data[0]], labels=["Male", "Female"])
+	ax[0, 0].set_title("Gender")
+
+	ax[1, 0].pie([total_data[1], 100 - total_data[1]], labels=["9 - 11", "12 - 17"])
+	ax[1, 0].set_title("Age Range")
+
+	ax[0, 1].pie([total_data[2], 100 - total_data[2]], labels=["Low", "Mid/High"])
+	ax[0, 1].set_title("Income")
+
+	ax[1, 1].pie([total_data[3], 100 - total_data[3]], labels=["Rural", "Urban"])
+	ax[1, 1].set_title("Rural/Urban")
+
+	ax[0, 2].pie([total_data[4], 100 - total_data[4]], labels=["Non", "Risktaker"])
+	ax[0, 2].set_title("Risk Taker")
+
+	figure.delaxes(ax[1,2])
+
+	# plt.figure(figsize=(8, 8))
+	# plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis')
+	# plt.scatter(centroids[:, 0], centroids[:, 1], c='red', marker='x')
+	# plt.title("K-means Clustering")
 	plt.show()
 
 som = SOM(16, dataset.shape[1], iter = 100)
@@ -142,6 +185,8 @@ som.train(dataset)
 labels, centroids = KMeans_Cluster(dataset, k = 5, iter = 100)
 plot(labels, centroids, dataset)
 
+# ! Comparing with sklearn knn remove befoer submission along side import (line 7)
+# * It looks similar btw
 kmeans = KMeans(n_clusters = 5, max_iter=100)
 labels = kmeans.fit_predict(som.weights.reshape(-1, som.feature_dim))
 
