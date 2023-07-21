@@ -1,5 +1,3 @@
-#.venv/Scripts/activate
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -86,7 +84,7 @@ def KMeans_Cluster(data, k = 5, iter = 100):
 	
 	return labels, centroids
 
-def plot(labels, centroids, data):
+def plot(labels, data):
 	data = som.weights.reshape(-1, data.shape[1])
 	# Create a DataFrame to store the cluster labels and feature values
 	cluster_df = pd.DataFrame({'Cluster': labels})
@@ -171,15 +169,10 @@ def plot(labels, centroids, data):
 	ax[5, 5].pie([total_data[4], 100 - total_data[4]], labels=["Non", "Risktaker"], autopct='%1.1f%%')
 	ax[5, 5].set_title("Risk Taker")
 
-
-	# plt.figure(figsize=(8, 8))
-	# plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis')
-	# plt.scatter(centroids[:, 0], centroids[:, 1], c='red', marker='x')
-	# plt.title("K-means Clustering")
 	plt.show()
 
 som = SOM(16, dataset.shape[1], iter = 100)
 som.train(dataset)
 
 labels, centroids = KMeans_Cluster(dataset, k = 5, iter = 100)
-plot(labels, centroids, dataset)
+plot(labels, dataset)
