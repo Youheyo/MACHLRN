@@ -3,7 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-dataset = pd.read_csv('dataset/MCO1 New InternetSurveyDataset.csv')
+dataset = pd.read_csv('dataset/kNN Internet Survey Sheet_modified.csv')
+extra_data = dataset.iloc[:, list(range(4)) + [-1]]
+dataset = dataset.iloc[:, 4:-1]
 
 class SOM:
 	def __init__(self, size, feature_dim, iter, radius = 3, learning_rate = .5):
@@ -88,11 +90,11 @@ def plot(labels, data):
 	data = som.weights.reshape(-1, data.shape[1])
 	# Create a DataFrame to store the cluster labels and feature values
 	cluster_df = pd.DataFrame({'Cluster': labels})
-	cluster_df['Gender'] = dataset['a1']
-	cluster_df['Age Range'] = dataset['a2']
-	cluster_df['Income'] = dataset['a3']
-	cluster_df['Rural/Urban'] = dataset['a4']
-	cluster_df['Risk Taker'] = dataset['RiskTaker']
+	cluster_df['Gender'] = extra_data['b1']
+	cluster_df['Age Range'] = extra_data['b3']
+	cluster_df['Income'] = extra_data['b4']
+	cluster_df['Rural/Urban'] = extra_data['b5']
+	cluster_df['Risk Taker'] = extra_data['RiskTaker']
 
 	total_data = np.zeros(5)
 
@@ -100,7 +102,7 @@ def plot(labels, data):
 	plt.suptitle("Cluster Stats")
 
 	for i in range(5):
-	# Group the DataFrame by cluster and calculate the percentage of features 1 and 2
+	# Group the DataFrame by cluster
 		cluster_data = cluster_df.loc[cluster_df['Cluster'] == i]
 		cluster_size = len(cluster_data)
 		gender = round(cluster_data['Gender'].value_counts(sort = False) / cluster_size * 100, 2) 
@@ -171,7 +173,7 @@ def plot(labels, data):
 
 	plt.show()
 
-som = SOM(16, dataset.shape[1], iter = 100)
+som = SOM(16, dataset.shape[1], iter = 100000)
 som.train(dataset)
 
 labels, centroids = KMeans_Cluster(dataset, k = 5, iter = 100)
