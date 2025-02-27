@@ -31,10 +31,10 @@ print(f"Using dataset{pick_dataset+1} with a test size of {dataset_test_size*100
 
 match pick_dataset:
     case 0:
-        dataset = pd.read_csv("diabetes_binary_5050split_health_indicators_BRFSS2015.csv")
+        dataset = pd.read_csv("MC04/diabetes_binary_5050split_health_indicators_BRFSS2015.csv")
         diabetes_tag = dataset['Diabetes_binary']
     case 1:
-        dataset = pd.read_csv("diabetes_012_health_indicators_BRFSS2015.csv")
+        dataset = pd.read_csv("MC04/diabetes_012_health_indicators_BRFSS2015.csv")
         diabetes_tag = dataset['Diabetes_012']
 
 features = dataset.iloc[:, 1:]
@@ -61,5 +61,3 @@ disp = ConfusionMatrixDisplay(confusion_matrix=matrix,display_labels=data.classe
 
 disp.plot(colorbar=False)
 plt.show()
-
-print("Code complete")

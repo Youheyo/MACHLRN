@@ -10,8 +10,8 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classifica
 print("Linear Regression")
 
 try:
-    pick_dataset = int(input("Pick Dataset [0,1]"))
     dataset_test_size = int(input("Enter Test size %"))
+    pick_dataset = int(input("Pick Dataset [0,1]"))
 except:
     print("Error in inputs, Default parameters set")
     pick_dataset = 0
@@ -25,10 +25,10 @@ print(f"Using dataset{pick_dataset+1} with a test size of {dataset_test_size*100
 
 match pick_dataset:
     case 0:
-        dataset = pd.read_csv("diabetes_binary_5050split_health_indicators_BRFSS2015.csv")
+        dataset = pd.read_csv("MC04/diabetes_binary_5050split_health_indicators_BRFSS2015.csv")
         diabetes_tag = dataset['Diabetes_binary']
     case 1:
-        dataset = pd.read_csv("diabetes_012_health_indicators_BRFSS2015.csv")
+        dataset = pd.read_csv("MC04/diabetes_012_health_indicators_BRFSS2015.csv")
         diabetes_tag = dataset['Diabetes_012']
 
 features = dataset.iloc[:, 1:]
